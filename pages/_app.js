@@ -1,11 +1,16 @@
 import "../styles/globals.css";
-import StoreProvider from "../store/store-context";
 
 function MyApp({ Component, pageProps }) {
-  return (
-    <StoreProvider>
-      <Component {...pageProps} />
-    </StoreProvider>
+  return( 
+    <div>
+    <header>
+      <p> dit is mijn header</p>
+    </header>
+      <Component {...pageProps} />{" "}
+      <footer>
+          <p> dit is mijn footer 2023 Niels Perdon</p>
+      </footer>
+    </div>
   );
 }
 
