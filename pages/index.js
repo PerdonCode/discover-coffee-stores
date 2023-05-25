@@ -8,7 +8,6 @@ import coffeeData from "../pages/data/coffee-store-data.json"
 
 
 export default function Home(props) {
-  console.log("props", props);
   const handleOnBannerBtnClick = () => {  
     console.log("hi button clicked");
   };
@@ -23,7 +22,7 @@ export default function Home(props) {
        <div className={styles.heroImage}>
         <Image src="/static/hero-image.png" width={700} height={400}></Image>
        </div>
-      {coffeeData.length > 0 && (
+      {props.coffeeData.length > 0 && (
         <>
           <h2 className={styles.heading2}>Toronto stores</h2>
           <div className={styles.cardLayout}>
