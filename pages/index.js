@@ -6,11 +6,16 @@ import Card from '../components/card';
 import styles from "../styles/Home.module.css";
 import coffeeData from "../pages/data/coffee-store-data.json"
 import { fetchCoffeeStores } from '../lib/coffee-stores';
+import useTrackLocation from '../hooks/use-track-location';
 
 
 export default function Home(props) {
-  const handleOnBannerBtnClick = () => {  
-    //handleTrackLocation();
+  const{ handleTrackLocation, latLong, locationErrorMsg, isFindingLocation} = useTrackLocation();
+
+  const handleOnBannerBtnClick =  () => {  
+     handleTrackLocation();
+
+    console.log({latLong, locationErrorMsg});
   };
   return (
     <div className={styles.container}>
@@ -19,7 +24,8 @@ export default function Home(props) {
       </Head>
 
       <main className={styles.main}>
-       <Banner buttonText ="View stores nearby" handleOnClick={handleOnBannerBtnClick} />
+       <Banner buttonText ={isFindingLocation ? "Locating..." : "View stores nearby" } handleOnClick={handleOnBannerBtnClick} />
+      {locationErrorMsg}
        <div className={styles.heroImage}>
         <Image src="/static/hero-image.png" width={700} height={400}></Image>
        </div>
