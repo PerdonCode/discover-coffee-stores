@@ -3,18 +3,20 @@
 
 import Link from "next/link";
 import { useRouter } from "next/router";
-import CoffeeStoreData from "../data/coffee-store-data.json"
 import Head from "next/head";
 import styles from '../../styles/coffee-store.module.css'
 import Image from "next/image";
 import cls from "classnames";
+import { fetchCoffeeStores } from "../../lib/coffee-stores";
 
 
-export function getStaticProps({params}){
-    console.log('params', params);
+export async function getStaticProps({params}){
+   const coffeeStores = await fetchCoffeeStores();
+   console.log("data", coffeeStores);
+
     return{
       props: {
-         CoffeeStore: CoffeeStoreData.find((coffeeStore) => {
+         CoffeeStore: coffeeStores.find((coffeeStore) => {
             return coffeeStore.id.toString() === params.id; //dynamic id
            
          })
@@ -22,9 +24,10 @@ export function getStaticProps({params}){
    }
 }
 
-export function getStaticPaths(){
+export async function getStaticPaths(){
    // paths dynamic
-   const paths = CoffeeStoreData.map(coffeeStore =>{
+   const coffeeStores = await fetchCoffeeStores();
+   const paths = coffeeStores.map(coffeeStore =>{
       return {
          params:{
             id: coffeeStore.id.toString(),
@@ -44,7 +47,7 @@ const CoffeeStore = (props) => {
    if(router.isFallback){
       return <div>loading....</div>
    }
- const {address ,name , neighbourhood, imgUrl} = props.CoffeeStore;
+ const { address ,name , locality, imgUrl} = props.CoffeeStore;
 
  const handleUpvoteButton = () => {
    console.log('clicked');
@@ -63,17 +66,24 @@ const CoffeeStore = (props) => {
             <h1 className={styles.name}>{name}</h1>
          </div>
     
-    <Image src={imgUrl} width={600} height={360} className={styles.storeImg} alt={name} />
+    <Image src={imgUrl || "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"} width={600} height={360} className={styles.storeImg} alt={name} />
     </div>
     <div className={cls("glass", styles.col2)}>
-      <div className={styles.iconWrapper}>
+       {/* check for address then show */} 
+      {address&& (
+         <div className={styles.iconWrapper}>
          <Image src="/static/icons/places.svg" width={24} height={24} alt="icon"/>
          <p className={styles.text}>{address}</p>
       </div>
-      <div className={styles.iconWrapper}>
+      )}
+      {/* check for locality then show */} 
+      {locality && (
+         <div className={styles.iconWrapper}>
          <Image src="/static/icons/nearMe.svg" width={24} height={24} alt="icon" />
-         <p className={styles.text}>{neighbourhood}</p>
+         <p className={styles.text}>{locality}</p>
       </div>
+      )}
+      
       <div className={styles.iconWrapper}>
          <Image src="/static/icons/star.svg" width={24} height={24}  alt="icon"/>
          <p className={styles.text}>1</p>
