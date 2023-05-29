@@ -7,23 +7,34 @@ import styles from "../styles/Home.module.css";
 import coffeeData from "../pages/data/coffee-store-data.json"
 import { fetchCoffeeStores } from '../lib/coffee-stores';
 import useTrackLocation from '../hooks/use-track-location';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import {ACTION_TYPES, StoreContext } from './_app';
 
 
 export default function Home(props) {
-  const{ handleTrackLocation, latLong, locationErrorMsg, isFindingLocation} = useTrackLocation();
+  const{ handleTrackLocation, locationErrorMsg, isFindingLocation} = useTrackLocation();
 
-  const [coffeeStores, setCoffeeStores] = useState('');
+  //const [coffeeStores, setCoffeeStores] = useState('');
   const [coffeeStoresError, setCoffeeStoresError] = useState(null);
+  const {dispatch, state} = useContext(StoreContext);
+  const {coffeeStores, latLong} = state;
 
   // get location and set location
   useEffect(() => {
     async function setCoffeeStoresByLocation() {
           if (latLong) {
             try{
-              const fetchedCoffeeStores = await fetchCoffeeStores();
-              setCoffeeStores(fetchedCoffeeStores);
+              const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 30);
+              //setCoffeeStores(fetchedCoffeeStores);
               // set coffee stores
+              dispatch({
+                type: ACTION_TYPES.SET_COFFEE_STORES,
+                payload: {
+                  coffeeStores: fetchedCoffeeStores,
+                 
+                },
+              }); 
+              
             }catch(error){
               // set error
               setCoffeeStoresError(error.message);
@@ -51,7 +62,7 @@ export default function Home(props) {
        <div className={styles.heroImage}>
         <Image src="/static/hero-image.png" width={700} height={400}></Image>
        </div>
-       {coffeeStores.length > 0 && (
+      {coffeeStores.length > 0 && (
         <>
           <h2 className={styles.heading2}>Stores near me</h2>
           <div className={styles.cardLayout}>
