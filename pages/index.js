@@ -24,9 +24,9 @@ export default function Home(props) {
               const fetchedCoffeeStores = await fetchCoffeeStores();
               setCoffeeStores(fetchedCoffeeStores);
               // set coffee stores
-            }catch{
+            }catch(error){
               // set error
-              setCoffeeStoresError(error);
+              setCoffeeStoresError(error.message);
             }
         }
     }
