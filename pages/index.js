@@ -4,7 +4,6 @@ import Banner from '../components/banner'
 import Image from 'next/image';
 import Card from '../components/card';
 import styles from "../styles/Home.module.css";
-import coffeeData from "../pages/data/coffee-store-data.json"
 import { fetchCoffeeStores } from '../lib/coffee-stores';
 import useTrackLocation from '../hooks/use-track-location';
 import { useEffect, useState, useContext } from 'react';
@@ -31,7 +30,6 @@ export default function Home(props) {
                 type: ACTION_TYPES.SET_COFFEE_STORES,
                 payload: {
                   coffeeStores: fetchedCoffeeStores,
-                 
                 },
               }); 
               
