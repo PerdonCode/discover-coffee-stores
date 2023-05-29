@@ -7,11 +7,33 @@ import styles from "../styles/Home.module.css";
 import coffeeData from "../pages/data/coffee-store-data.json"
 import { fetchCoffeeStores } from '../lib/coffee-stores';
 import useTrackLocation from '../hooks/use-track-location';
+import { useEffect, useState } from 'react';
 
 
 export default function Home(props) {
   const{ handleTrackLocation, latLong, locationErrorMsg, isFindingLocation} = useTrackLocation();
 
+  const [coffeeStores, setCoffeeStores] = useState('');
+  const [coffeeStoresError, setCoffeeStoresError] = useState(null);
+
+  // get location and set location
+  useEffect(() => {
+    async function setCoffeeStoresByLocation() {
+          if (latLong) {
+            try{
+              const fetchedCoffeeStores = await fetchCoffeeStores();
+              setCoffeeStores(fetchedCoffeeStores);
+              // set coffee stores
+            }catch{
+              // set error
+              setCoffeeStoresError(error);
+            }
+        }
+    }
+     
+    setCoffeeStoresByLocation();
+    },[latLong])
+    
   const handleOnBannerBtnClick =  () => {  
      handleTrackLocation();
 
@@ -25,13 +47,24 @@ export default function Home(props) {
 
       <main className={styles.main}>
        <Banner buttonText ={isFindingLocation ? "Locating..." : "View stores nearby" } handleOnClick={handleOnBannerBtnClick} />
-      {locationErrorMsg}
+      {coffeeStoresError && <p>Something went wrong: {locationErrorMsg}</p>}
        <div className={styles.heroImage}>
         <Image src="/static/hero-image.png" width={700} height={400}></Image>
        </div>
+       {coffeeStores.length > 0 && (
+        <>
+          <h2 className={styles.heading2}>Stores near me</h2>
+          <div className={styles.cardLayout}>
+          {coffeeStores.map((CData) =>{
+          return(<Card key={CData.id} name={CData.name} imgUrl={CData.imgUrl || "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"}  href={`/coffee-store/${CData.id}`} alt={CData.alt} className={styles.card}/>); 
+        })}
+        </div>
+        </>
+      )}     
+
       {props.coffeeStores.length > 0 && (
         <>
-          <h2 className={styles.heading2}>Toronto stores</h2>
+          <h2 className={styles.heading2}>Bilthoven</h2>
           <div className={styles.cardLayout}>
           {props.coffeeStores.map((CData) =>{
           return(<Card key={CData.id} name={CData.name} imgUrl={CData.imgUrl || "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"}  href={`/coffee-store/${CData.id}`} alt={CData.alt} className={styles.card}/>); 
