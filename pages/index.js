@@ -23,13 +23,14 @@ export default function Home(props) {
     async function setCoffeeStoresByLocation() {
           if (latLong) {
             try{
-              const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 6);
+              const response = await fetch(`/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=6`);
+              const coffeeStores = await response.json();
               //setCoffeeStores(fetchedCoffeeStores);
               // set coffee stores
               dispatch({
                 type: ACTION_TYPES.SET_COFFEE_STORES,
                 payload: {
-                  coffeeStores: fetchedCoffeeStores,
+                  coffeeStores,
                 },
               }); 
               
@@ -87,6 +88,8 @@ export default function Home(props) {
 }
 
 export async function getStaticProps() {
+  // api should not be called in staticProps
+  //your API route is not available until your Next app is built and getStaticProps runs at build time. Therefore the API route would not be available to populate the data during the build.
   const coffeeStores = await fetchCoffeeStores();
   return {
     props: {
