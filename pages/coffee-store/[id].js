@@ -100,9 +100,12 @@ useEffect(() => {
 }, [id, initialProps.coffeeStore, coffeeStores]);
 
  const { address ,name , locality, imgUrl} = coffeeStore;
+ const [votingCount, setVotingCount] = useState(1);
 
  const handleUpvoteButton = () => {
    console.log('clicked');
+   let count = votingCount + 1;
+   setVotingCount(count);
  }
  return (
     <div> 
@@ -138,7 +141,7 @@ useEffect(() => {
       
       <div className={styles.iconWrapper}>
          <Image src="/static/icons/star.svg" width={24} height={24}  alt="icon"/>
-         <p className={styles.text}>1</p>
+         <p className={styles.text}>{votingCount}</p>
       </div>
       <button className={styles.upvoteButton} onClick={handleUpvoteButton}>up vote</button>
  </div>
