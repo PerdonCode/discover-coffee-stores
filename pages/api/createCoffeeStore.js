@@ -1,9 +1,4 @@
-const Airtable = require('airtable');
-const base = new Airtable({apiKey: process.env.NEXT_PUBLIC_AIRTABLE_API_TOKEN}).base(process.env.NEXT_PUBLIC_AIRTABLE_BASE_KEY);
-
-const table = base('coffeeStores');
-
-console.log({table});
+import { table, getMinifiedRecords } from "../../lib/airtable";
 
 const createCoffeeStore = async (req, res) =>{   
         if(req.method ==="POST"){
@@ -15,11 +10,7 @@ const createCoffeeStore = async (req, res) =>{
                     filterByFormula: `id=${id}`,
                     }).firstPage(); 
                 if(findCoffeeStoreRecords.length !== 0){
-                    const records = findCoffeeStoreRecords.map((record) =>{
-                    return{
-                        ...record.fields
-                    };
-                });
+                    const records = getMinifiedRecords(findCoffeeStoreRecords);
                     res.json(records);
                 }else{
                     // create record
@@ -36,12 +27,8 @@ const createCoffeeStore = async (req, res) =>{
                             },
                         },
                     ]);
-                    const records = createRecords.map((record) =>{
-                        return{
-                            ...record.fields,
-                        };
-                    });
-                    res.json({records});
+                    const records = getMinifiedRecords(createRecords);
+                    res.json(records);
                     }else{
                         res.status(400);
                         res.json({message: "name is missing"});
@@ -52,9 +39,9 @@ const createCoffeeStore = async (req, res) =>{
                 res.json({message: "id is missing"});
             }
     }catch(err){
-       console.error("error finding store", err);
+       console.error("error creating or finding store", err);
        res.status(500);
-       res.json({message: "error finding store", err});
+       res.json({message: "error creating or finding store", err});
     }
     }
 };
