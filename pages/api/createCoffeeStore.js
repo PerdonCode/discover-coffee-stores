@@ -9,47 +9,48 @@ const createCoffeeStore = async (req, res) =>{
         if(req.method ==="POST"){
             // find a record
             const{id, name, locality, address, imgUrl, voting} = req.body;
-        try{      
-            const findCoffeeStoreRecords = await table.select({
-            filterByFormula: `id=${id}`,
-            }).firstPage();
-
-            
-        
-        if(findCoffeeStoreRecords.length !== 0){
-            const records = findCoffeeStoreRecords.map((record) =>{
-            return{
-                ...record.fields
-            };
-        });
-            res.json(records);
-        }else{
-            // create record
-            if(id && name){
-                const createRecords = await table.create([
-                {
-                    fields: {
-                        id,
-                        name,
-                        address,
-                        locality,
-                        voting,
-                        imgUrl
-                    },
-                },
-            ]);
-            const records = createRecords.map((record) =>{
-                return{
-                    ...record.fields,
-                };
-            });
-            res.json({records});
+        try{  
+            if(id){
+                const findCoffeeStoreRecords = await table.select({
+                    filterByFormula: `id=${id}`,
+                    }).firstPage(); 
+                if(findCoffeeStoreRecords.length !== 0){
+                    const records = findCoffeeStoreRecords.map((record) =>{
+                    return{
+                        ...record.fields
+                    };
+                });
+                    res.json(records);
+                }else{
+                    // create record
+                    if(name){
+                        const createRecords = await table.create([
+                        {
+                            fields: {
+                                id,
+                                name,
+                                address,
+                                locality,
+                                voting,
+                                imgUrl
+                            },
+                        },
+                    ]);
+                    const records = createRecords.map((record) =>{
+                        return{
+                            ...record.fields,
+                        };
+                    });
+                    res.json({records});
+                    }else{
+                        res.status(400);
+                        res.json({message: "name is missing"});
+                    }
+            } 
             }else{
                 res.status(400);
-                res.json({message: "id or name is missing"});
+                res.json({message: "id is missing"});
             }
-            
-        }
     }catch(err){
        console.error("error finding store", err);
        res.status(500);
