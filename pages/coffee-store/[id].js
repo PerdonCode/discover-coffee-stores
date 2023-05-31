@@ -114,10 +114,28 @@ useEffect(() => {
   }
  }, [data]);
 
- const handleUpvoteButton = () => {
+ const handleUpvoteButton = async () => {
    console.log('clicked');
-   let count = votingCount + 1;
-   setVotingCount(count);
+
+   try {
+    const response = await fetch("/api/favouriteCoffeeStoreById", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+      }),
+    });
+
+    const dbCoffeeStore = await response.json();
+    if(dbCoffeeStore && dbCoffeeStore.length > 0){
+        let count = votingCount + 1;
+        setVotingCount(count);
+    }
+  } catch (err) {
+    console.error("error upvoting the coffeeStore", err);
+  }
  }
  if(error){
   return <div>Something went wrong retrieving this page</div>
