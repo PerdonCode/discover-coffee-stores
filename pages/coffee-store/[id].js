@@ -11,6 +11,8 @@ import { fetchCoffeeStores } from "../../lib/coffee-stores";
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../store/store-context";
 import { isEmpty } from "../../utils";
+import useSWR from "swr";
+import { fetcher } from "../../utils";
 
 // get static props
 export async function getStaticProps(staticProps) {
@@ -101,11 +103,24 @@ useEffect(() => {
 
  const { address ,name , locality, imgUrl} = coffeeStore;
  const [votingCount, setVotingCount] = useState(1);
+ const { data, error } = useSWR(`/api/getCoffeeStoreById?id=${id}`, fetcher);
+
+ useEffect(() => {
+  if(data && data.length > 0){
+    console.log('data from swr', data);
+    setCoffeeStore(data[0]);
+
+    setVotingCount(data[0].voting)
+  }
+ }, [data]);
 
  const handleUpvoteButton = () => {
    console.log('clicked');
    let count = votingCount + 1;
    setVotingCount(count);
+ }
+ if(error){
+  return <div>Something went wrong retrieving this page</div>
  }
  return (
     <div> 
